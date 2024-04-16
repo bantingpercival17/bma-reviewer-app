@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">BMA - REVIEWER</string>
+    <string name="title_activity_main">BMA - REVIEWER</string>
+    <string name="package_name">student.bma.edu.ph</string>
+    <string name="custom_url_scheme">student.bma.edu.ph</string>
+</resources>

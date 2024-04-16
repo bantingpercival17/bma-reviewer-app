@@ -1,49 +1,29 @@
 <template>
-  <div class="row m-0 align-items-center vh-100">
-    <div class="col-lg-5 col-md-12">
+  <div class="row m-0 align-items-center vh-50">
+    <div class="col-lg-12 col-md-12">
       <div class="card-body">
-        <center>
-          <img
-            src="@/assets/image/bma-logo-1.png"
-            class="center img-fluid avatar avatar-100 rounded-circle"
-            alt="logo"
-          />
-        </center>
+        <div class="text-center">
+          <img src="@/assets/image/bma-logo-1.png" class="center img-fluid avatar avatar-100 rounded-circle"
+            alt="logo" />
+        </div>
         <h2 class="mb-2 text-center"><b>STUDENT PORTAL</b></h2>
         <p class="text-center">SIGN IN</p>
-        <!-- <span class="badge bg-secondary mt-2">version 1.0.1</span> <br/>
-        <span class="badge bg-secondary mt-2">{{ url }}</span> <br/>
-        <span class="badge bg-secondary mt-2">{{ crsf }}</span> <br/> -->
+        <!--  <p class="text-center">{{ axiosServer }}</p> -->
         <form @submit.prevent="onLogin" class="row">
           <div class="">
             <div class="col-lg-12">
-              <input-component-v2
-                type="email"
-                label="email"
-                v-model:value="username"
-                :error="errors.email"
-              />
+              <input-component-v2 type="email" label="email" v-model:value="username" :error="errors.email" />
             </div>
             <div class="col-lg-12">
-              <input-component-v2
-                type="password"
-                label="password"
-                v-model:value="password"
-                :error="errors.password"
-              />
+              <input-component-v2 type="password" label="password" v-model:value="password" :error="errors.password" />
             </div>
             <span class="badge bg-danger mt-2" v-if="errorMessage">{{
-              errorMessage
-            }}</span>
+          errorMessage
+        }}</span>
 
             <div class="col-lg-12 d-flex justify-content-between">
               <div class="form-check mb-3">
-                <input
-                  type="checkbox"
-                  class="form-check-input"
-                  id="customCheck1"
-                  v-model="rememberMe"
-                />
+                <input type="checkbox" class="form-check-input" id="customCheck1" v-model="rememberMe" />
                 <label class="form-check-label" for="customCheck1">Remember Me</label>
               </div>
               <!--   <router-link :to="{ name: 'app-layout.student-forget-password' }" class=""
@@ -69,17 +49,21 @@
 <script>
 import InputComponentV2 from "@/views/elements/InputComponentV2.vue";
 import LoginValidation from "@/services/validation/LoginValidation";
+import axios from "axios";
 import {
   LOGIN_ACTION,
   SHOW_LOADING_MUTATION,
-  TESTING_ACTION,
 } from "@/store/storeConstants.js";
+import {
+  alertController,
+  loadingController
+} from '@ionic/vue';
 import { mapActions, mapMutations } from "vuex";
-import axios from "axios";
 export default {
   name: "LoginScreen",
   components: {
     InputComponentV2,
+    alertController
   },
   data() {
     return {
@@ -91,6 +75,7 @@ export default {
       errorMessage: "",
       url: "",
       crsf: "",
+      axiosServer: axios.defaults.baseURL
     };
   },
   async mounted() {
@@ -112,22 +97,12 @@ export default {
     ...mapMutations({
       showLoading: SHOW_LOADING_MUTATION,
     }),
-    async getToken() {
-      return await axios.get("/token");
-    },
     async onLogin() {
       const validation = new LoginValidation(this.username, this.password);
       this.errors = validation.checkValidations();
       if ("email" in this.errors || "password" in this.errors) {
         return false;
       }
-      /*  const data = {
-        email: this.username,
-        password: this.password,
-        remember_me: this.rememberMe,
-      };
-      console.log(data); */
-      //this.$router.push("/reviewer");
       this.errorMessage = "";
       this.showLoading(true);
       const data = {
@@ -136,15 +111,21 @@ export default {
         app: true,
         remember_me: this.rememberMe,
       };
+      const loading = await loadingController.create({
+        message: 'Loading...',
+        cssClass: 'custom-loading',
+      });
+
+      loading.present();
       try {
         console.log(data);
         const response = await this.login(data);
         this.$router.push("/reviewer");
       } catch (error) {
         this.errorMessage = error;
-        this.showLoading(false);
+        loading.dismiss()
       }
-      this.showLoading(false);
+      loading.dismiss()
     },
   },
 };

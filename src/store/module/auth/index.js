@@ -10,7 +10,8 @@ import {
     LOGOUT_ACTION,
     SET_USER_TOKEN_MUTATION,
     APPLICANT_REGISTRATION_ACTION,
-    GET_USER_TYPE
+    GET_USER_TYPE,
+    GET_USER_ID
 } from '@/store/storeConstants'
 import axios from 'axios'
 import LoginValidation from '@/services/validation/LoginValidation.js'
@@ -41,22 +42,20 @@ export default {
         [GET_USER_IMAGE]: (state) => {
             return state.image
         },
-
         [GET_USER_TOKEN]: (state) => {
             return state.token
         },
-
         [IS_USER_AUTHENTICATE_GETTER]: (state) => {
             return !!state.token
         },
         [GET_USER_NAME]: (state) => {
             return state.name
         },
-        [GET_USER_NAME]: (state) => {
-            return state.name
-        },
         [GET_USER_TYPE]: (state) => {
             return state.userType
+        },
+        [GET_USER_ID]: (state) => {
+            return state.userId
         }
     },
     actions: {
@@ -112,13 +111,13 @@ export default {
                             token: response.data.token,
                             image: response.data.student.profile_picture
                         }
-                        localStorage.setItem('userData', JSON.stringify(tokenData))
                         context.commit(SET_USER_TOKEN_MUTATION, tokenData)
-                        const userModel = new User();
-                        userModel.insertUser(response.data.student.account.student_id,
-                            response.data.student.account.email, userName, response.data.token)
+                        localStorage.setItem('userData', JSON.stringify(tokenData))
+                        /*  const userModel = new User();
+                         userModel.insertUser(response.data.student.account.student_id,
+                             response.data.student.account.email, userName, response.data.token) */
                         console.log('Save Detials')
-                    }else{
+                    } else {
                         throw 'No data'
                     }
 

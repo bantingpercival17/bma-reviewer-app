@@ -27,7 +27,7 @@ export default {
     methods: {
         async initDB() {
             try {
-                this.customAlert("BMA Reviewer", axios.defaults.baseURL);
+                //this.customAlert("BMA Reviewer", axios.defaults.baseURL);
                 const sqlite = new SQLiteConnection(CapacitorSQLite);
                 const database = await sqlite.createConnection("ionic-vue-db",
                     false, "no-encryption");

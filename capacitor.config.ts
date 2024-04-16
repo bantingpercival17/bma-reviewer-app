@@ -5,7 +5,8 @@ const config: CapacitorConfig = {
   appName: 'BMA - REVIEWER',
   webDir: 'dist',
   server: {
-    androidScheme: 'http'
+    androidScheme: 'http',
+    "cleartext": true
   }
 };
 

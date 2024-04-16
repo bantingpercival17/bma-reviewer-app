@@ -5,30 +5,21 @@
         <ion-title>Reviewer</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content v-if="isLoading" class="centered-content">
-      <div class="mt-5">
-        <center>
-          <ion-spinner color="secondary" style="font-size: 3rem"></ion-spinner>
-        </center>
-      </div>
-    </ion-content>
-    <ion-content v-else :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Reviewer</ion-title>
-        </ion-toolbar>
-      </ion-header>
 
+    <ion-content :fullscreen="true">
+      <ion-refresher slot="fixed" @ionRefresh="handleScroll($event)">
+        <ion-refresher-content pulling-text="Pull to refresh" refreshing-spinner="circles"
+          refreshing-text="Refreshing...">
+        </ion-refresher-content>
+      </ion-refresher>
       <div v-if="categories.length > 0">
         <div v-for="(item, index) in categories" :key="index">
-          <router-link
-            :to="{ name: 'app-layout.category', params: { category: item.id } }"
-          >
+          <router-link :to="{ name: 'screen-layout.category', params: { category: item.id } }">
             <ion-card class="bg-info">
               <ion-card-header>
-                <ion-card-title class="text-white">{{
-                  item.category_name
-                }}</ion-card-title>
+                <ion-card-title class="text-white">
+                  {{ item.category_name }}
+                </ion-card-title>
                 <ion-card-subtitle class="text-white">
                   Total number of Question : {{ item.question_lists.length }}
                 </ion-card-subtitle>
@@ -38,15 +29,17 @@
         </div>
       </div>
       <div v-else>
-        <ion-card>
-          <ion-card-content class="text-center">
-            <label for="">{{ errorMessage }}</label>
-            <br />
-            <button class="btn btn-primary btn-sm mt-4" @click="refreshData">
-              TRY AGAIN
-            </button>
-          </ion-card-content>
-        </ion-card>
+        <div v-if="errorMessage">
+          <ion-card>
+            <ion-card-content class="text-center">
+              <label for="">{{ errorMessage }}</label>
+              <br />
+              <button class="btn btn-primary btn-sm mt-4" @click="refreshData">
+                TRY AGAIN
+              </button>
+            </ion-card-content>
+          </ion-card>
+        </div>
       </div>
     </ion-content>
   </ion-page>
@@ -79,6 +72,7 @@ import {
   alertController,
   IonSpinner,
   IonCardContent,
+  loadingController, IonRefresher, IonRefresherContent
 } from "@ionic/vue";
 import axios from "axios";
 export default {
@@ -95,11 +89,11 @@ export default {
     IonCardSubtitle,
     IonButton,
     IonSpinner,
+    loadingController, IonRefresher, IonRefresherContent
   },
   data() {
     return {
       categories: [],
-      isLoading: true,
       errorMessage: "",
     };
   },
@@ -130,21 +124,27 @@ export default {
           console.log(error);
         });
     },
-    mountedData() {
+    async mountedData() {
+      const alertLoading = await this.loadingAlert();
+      alertLoading.present();
       axios
         .get("/examination-review")
         .then(({ data }) => {
           this.categories = data.examination.category_lists;
-          this.isLoading = false;
+          //this.isLoading = false;
+          alertLoading.dismiss()
         })
         .catch((error) => {
           this.errorMessage = error;
-          this.isLoading = false;
+          //this.isLoading = false;
+          this.customAlert('Error Alert', this.errorMessage)
+          alertLoading.dismiss()
+
           console.log(error);
         });
     },
     refreshData() {
-      this.isLoading = true;
+      //this.isLoading = true;
       this.mountedData();
     },
     async presentAlert() {
@@ -157,6 +157,14 @@ export default {
 
       await alert.present();
     },
+    async loadingAlert() {
+      const loading = await loadingController.create({
+        message: 'Loading...',
+        cssClass: 'custom-loading',
+      });
+
+      return loading
+    },
     async customAlert(header, message) {
       const alert = await alertController.create({
         header: header,
@@ -166,6 +174,12 @@ export default {
       });
 
       await alert.present();
+    },
+    async handleScroll(event) {
+      // Show loading alert if the user scrolls
+      this.categories = []
+      this.mountedData()
+      event.target.complete();
     },
   },
 };

@@ -5,21 +5,17 @@
         <ion-title>Examination</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content
-      v-if="isLoading"
-      style="display: flex; justify-content: center; align-items: center"
-    >
+    <ion-content v-if="isLoading" style="display: flex; justify-content: center; align-items: center">
       <center>
         <ion-spinner color="secondary" style="font-size: 3rem"></ion-spinner>
       </center>
     </ion-content>
     <ion-content v-else :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">Examination</ion-title>
-        </ion-toolbar>
-      </ion-header>
-
+      <ion-refresher slot="fixed" @ionRefresh="handleScroll($event)">
+        <ion-refresher-content pulling-text="Pull to refresh" refreshing-spinner="circles"
+          refreshing-text="Refreshing...">
+        </ion-refresher-content>
+      </ion-refresher>
       <div v-for="(item, index) in categories" :key="index">
         <router-link :to="`/examination/question/view/` + item.id">
           <ion-card class="bg-primary">
@@ -55,7 +51,7 @@ import {
   IonCardSubtitle,
   IonButton,
   alertController,
-  IonSpinner,
+  loadingController, IonRefresher, IonRefresherContent
 } from "@ionic/vue";
 import axios from "axios";
 export default {
@@ -70,7 +66,7 @@ export default {
     IonCardTitle,
     IonCardSubtitle,
     IonButton,
-    IonSpinner,
+    loadingController, IonRefresher, IonRefresherContent
   },
   data() {
     return {
@@ -79,16 +75,22 @@ export default {
   },
   mounted() {
     console.log("Examination View");
-    axios
-      .get("/examination-review")
-      .then(({ data }) => {
-        this.categories = data.examination.category_lists;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.fetchData()
   },
   methods: {
+    async fetchData() {
+      const alertLoading = await this.loadingAlert();
+      alertLoading.present();
+      axios
+        .get("/examination-review")
+        .then(({ data }) => {
+          alertLoading.dismiss()
+          this.categories = data.examination.category_lists;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
     syncCategory(item) {
       axios
         .post("/category-view", { category: item })
@@ -121,6 +123,14 @@ export default {
 
       await alert.present();
     },
+    async loadingAlert() {
+      const loading = await loadingController.create({
+        message: 'Loading...',
+        cssClass: 'custom-loading',
+      });
+
+      return loading
+    },
     async customAlert(header, message) {
       const alert = await alertController.create({
         header: header,
@@ -130,6 +140,12 @@ export default {
       });
 
       await alert.present();
+    },
+    async handleScroll(event) {
+      // Show loading alert if the user scrolls
+      this.categories = []
+      this.fetchData()
+      event.target.complete();
     },
   },
 };

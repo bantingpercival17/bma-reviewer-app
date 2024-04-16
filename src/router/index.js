@@ -1,6 +1,7 @@
 import {
   createRouter,
-  createWebHistory
+  createWebHistory,
+  createWebHashHistory
 } from '@ionic/vue-router';
 import store from '../store/index'
 import {
@@ -12,21 +13,23 @@ const authRoute = (prop) => [{
   name: prop + '.login',
   meta: {
     auth: false,
-    name: 'login',
+    name: 'Login',
     user: 'guest'
   },
   component: () => import('@/views/auth/LoginScreen.vue')
 }]
-const appRoute = (prop) => [{
-    path: '/',
-    name: prop + '.login',
-    meta: {
-      auth: false,
-      name: 'dashboard',
-      user: 'student'
-    },
-    component: () => import('@/views/screen/ReviewerView.vue')
-  }, {
+const appRoute = (prop) => [
+  /* {
+      path: '/',
+      name: prop + '.login',
+      meta: {
+        auth: false,
+        name: 'dashboard',
+        user: 'student'
+      },
+      component: () => import('@/views/screen/ReviewerView.vue')
+    }, */
+  {
     path: '/reviewer',
     name: prop + '.dashboard',
     meta: {
@@ -71,13 +74,12 @@ const screenRoute = (prop) => [{
     component: () => import('@/views/screen/examination/ExaminationQuestionerView.vue')
   },
 ]
-const routes = [
-  /*  {
-       path: '/',
-       name: 'auth-layout',
-       component: () => import('@/views/auth/AuthLayout.vue'),
-       children: authRoute('auth-layout')
-     }, */
+const routes = [{
+    path: '/',
+    name: 'auth-layout',
+    component: () => import('@/views/auth/AuthLayout.vue'),
+    children: authRoute('auth-layout')
+  },
   {
     path: '/',
     name: 'app-layout',
@@ -88,7 +90,7 @@ const routes = [
     path: '/',
     name: 'screen-layout',
     component: () => import('@/views/auth/ScreenLayout.vue'),
-    children: screenRoute('app-layout')
+    children: screenRoute('screen-layout')
   },
 ]
 /* const routes = [{
@@ -154,16 +156,21 @@ function applicantUserMiddleware(to, from, next) {
     next()
   }
 }
-const router = createRouter({
+/* const router = createRouter({
   history: createWebHistory(
     import.meta.env.BASE_URL),
   routes
+}) */
+const router = createRouter({
+  history: createWebHashHistory(),
+  routes
 })
 /* router.beforeEach((to, from, next) => {
+
   const isAuth = store.getters[`auth/${IS_USER_AUTHENTICATE_GETTER}`]
   const isAuthType = store.getters[`auth/${GET_USER_TYPE}`]
   document.title = `${to.meta.name} - Baliwag Maritime Academy, Inc.`
-  console.log(isAuth)
+  console.log(store.state.auth)
   if (isAuth) {
     //studentUserMiddleware(to, from, next)
     next()

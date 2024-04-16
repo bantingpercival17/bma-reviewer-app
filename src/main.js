@@ -2,6 +2,7 @@ import {
   createApp
 } from 'vue'
 import App from './App.vue'
+import store from './store'
 import router from './router';
 import {
   IonicVue
@@ -21,14 +22,14 @@ import '@ionic/vue/css/text-alignment.css';
 import '@ionic/vue/css/text-transformation.css';
 import '@ionic/vue/css/flex-utils.css';
 import '@ionic/vue/css/display.css';
-
+//import './registerServiceWorker'
 /* Theme variables */
 import './theme/variables.css';
 import axiosInstance from './axios';
-import store from './store'
+
 const app = createApp(App)
-  .use(IonicVue)
   .use(store)
+  .use(IonicVue)
   .use(router);
 // Provide the Axios instance globally
 

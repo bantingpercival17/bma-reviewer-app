@@ -13,8 +13,8 @@
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title class="text-primary fw-bolder" size="large">{{
-            titleHeader
-          }}</ion-title>
+    titleHeader
+  }}</ion-title>
         </ion-toolbar>
       </ion-header>
       <div class="ion-padding">
@@ -24,42 +24,23 @@
               <div class="">
                 <div class="d-flex justify-content-between mb-5">
                   <div class="question-number">
-                    <span class="badge bg-primary"
-                      >QUESTION {{ currentQuestion + 1 }}</span
-                    >
+                    <span class="badge bg-primary">QUESTION {{ currentQuestion + 1 }}</span>
                   </div>
                 </div>
                 <div v-if="!questionList[currentQuestion].question">
-                  <img
-                    class="img-fluid"
-                    :src="questionView(questionList[currentQuestion].image_path)"
-                    alt=""
-                    height="100"
-                  />
+                  <img class="img-fluid" :src="questionView(questionList[currentQuestion].image_path)" alt=""
+                    height="100" />
                 </div>
                 <div v-else>
-                  <p
-                    class="text-primary fw-bolder h5"
-                    v-html="questionList[currentQuestion].question"
-                  ></p>
-                  <img
-                    v-if="!questionList[currentQuestion].image_path"
-                    :src="questionView(questionList[currentQuestion].image_path)"
-                    alt=""
-                    height="200"
-                  />
+                  <p class="text-primary fw-bolder h5" v-html="questionList[currentQuestion].question"></p>
+                  <img v-if="!questionList[currentQuestion].image_path"
+                    :src="questionView(questionList[currentQuestion].image_path)" alt="" height="200" />
                 </div>
                 <div class="question-choices row">
-                  <div
-                    class="col-lg-6 col-md-12"
-                    v-for="(item, index) in questionList[currentQuestion].choices_v3"
-                    :key="index"
-                  >
-                    <button
-                      :class="btnStyle(item.id)"
-                      @click="choiceAswer(item.id, currentQuestion, item.is_answer)"
-                      v-html="item.choice_name"
-                    ></button>
+                  <div class="col-lg-6 col-md-12" v-for="(item, index) in questionList[currentQuestion].choices_v3"
+                    :key="index">
+                    <button :class="btnStyle(item.id)" @click="choiceAswer(item.id, currentQuestion, item.is_answer)"
+                      v-html="item.choice_name"></button>
                     <!-- <button :class="btnStyle(item.id)" @click="choiceAnswer(item.id)">
                       {{ item.choice_name }}
                     </button> -->
@@ -67,11 +48,7 @@
                 </div>
               </div>
               <div class="form-group mt-5">
-                <button
-                  class="btn btn-outline-info me-3 btn-sm"
-                  @click="previousQuestion()"
-                  v-if="currentQuestion > 0"
-                >
+                <button class="btn btn-outline-info me-3 btn-sm" @click="previousQuestion()" v-if="currentQuestion > 0">
                   PREVIOUS
                 </button>
                 <button class="btn btn-info text-white btn-sm" @click="nextQuestion()">
@@ -125,7 +102,7 @@ import {
 } from "@ionic/vue";
 import axios from "axios";
 import ExaminationScore from "@/database/ExaminationScore.js";
-import { GET_USER_TOKEN, IS_USER_AUTHENTICATE_GETTER } from "@/store/storeConstants";
+import { GET_USER_TOKEN, IS_USER_AUTHENTICATE_GETTER, GET_USER_ID, } from "@/store/storeConstants";
 import { mapGetters } from "vuex";
 export default {
   data() {
@@ -163,6 +140,7 @@ export default {
   computed: {
     ...mapGetters("auth", {
       token: GET_USER_TOKEN,
+      userID: GET_USER_ID,
       isAuth: IS_USER_AUTHENTICATE_GETTER,
     }),
   },
@@ -234,6 +212,10 @@ export default {
       }
       this.countScore();
       this.nextQuestion();
+      // Store Score
+      if (this.questionList.length == (questionIndex + 1)) {
+        this.storeScore();
+      }
       /* console.log(this.selectedChoices); */
     },
     countScore() {
@@ -253,12 +235,12 @@ export default {
       await alert.present();
     },
     backHome() {
-      this.$router.push("/examination");
+      this.$router.replace("/examination");
     },
     tryAgain() {
       this.currentQuestion = 0;
       this.selectedChoices = [];
-      this.storeScore();
+      //this.storeScore();
     },
     storeScore() {
       let data = [this.score, 1, 1, 1];
@@ -267,9 +249,11 @@ export default {
         score: this.score,
         examination: this.examinationID,
         category: this.categoryID,
+        student_id: this.userID
       };
+      console.log(data)
       axios
-        .post("category-score", data, {
+        .post("examination-score", data, {
           headers: {
             Authorization: "Bearer " + this.token,
           },
@@ -278,7 +262,7 @@ export default {
         .catch((error) => {
           console.log(error);
         });
-      this.examinationScore.insertData(data);
+      //this.examinationScore.insertData(data);
     },
   },
 };
