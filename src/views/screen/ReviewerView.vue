@@ -3,6 +3,14 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>Reviewer</ion-title>
+        <ion-buttons slot="end">
+          <ion-button @click="logoutUser()">
+            <ion-icon :icon="logOut" class="p-0 m-0" size="medium"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <!-- <ion-button slot="end" class="bg-white" shape="round" @click="logOut">
+          <ion-icon :icon="logOut" class="p-0 m-0" size="medium"></ion-icon>
+        </ion-button> -->
       </ion-toolbar>
     </ion-header>
 
@@ -72,8 +80,11 @@ import {
   alertController,
   IonSpinner,
   IonCardContent,
-  loadingController, IonRefresher, IonRefresherContent
+  loadingController, IonRefresher, IonRefresherContent, IonIcon, IonButtons
 } from "@ionic/vue";
+import { logOut } from 'ionicons/icons'
+import { LOGOUT_ACTION } from '@/store/storeConstants.js'
+import { mapActions } from 'vuex';
 import axios from "axios";
 export default {
   components: {
@@ -89,12 +100,13 @@ export default {
     IonCardSubtitle,
     IonButton,
     IonSpinner,
-    loadingController, IonRefresher, IonRefresherContent
+    loadingController, IonRefresher, IonRefresherContent, IonIcon, IonButtons
   },
   data() {
     return {
       categories: [],
       errorMessage: "",
+      logOut
     };
   },
   mounted() {
@@ -102,6 +114,13 @@ export default {
     this.mountedData();
   },
   methods: {
+    ...mapActions('auth', {
+      logout: LOGOUT_ACTION
+    }),
+    logoutUser() {
+      this.logout()
+      this.$router.replace('/')
+    },
     syncCategory(item) {
       axios
         .post("/category-view", { category: item })

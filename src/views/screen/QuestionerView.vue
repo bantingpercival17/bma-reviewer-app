@@ -13,8 +13,8 @@
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title class="text-primary fw-bolder" size="large">{{
-            titleHeader
-          }}</ion-title>
+    titleHeader
+  }}</ion-title>
         </ion-toolbar>
       </ion-header>
       <div class="ion-padding">
@@ -24,43 +24,32 @@
               <div class="">
                 <div class="d-flex justify-content-between mb-5">
                   <div class="question-number">
-                    <span class="badge bg-primary"
-                      >QUESTION {{ currentQuestion + 1 }}</span
-                    >
+                    <span class="badge bg-primary">QUESTION {{ currentQuestion + 1 }}</span>
                   </div>
                   <div class="score">
                     <label for="" class="badge bg-info">SCORE</label>
                   </div>
                 </div>
-                <div v-if="!questionList[currentQuestion].question">
-                  <img
-                    class="img-fluid"
-                    :src="questionView(questionList[currentQuestion].image_path)"
-                    alt=""
-                    height="100"
-                  />
-                </div>
-                <div v-else>
-                  <p
-                    class="text-primary fw-bolder h5"
-                    v-html="questionList[currentQuestion].question"
-                  ></p>
-                  <img
-                    v-if="!questionList[currentQuestion].image_path"
-                    :src="questionView(questionList[currentQuestion].image_path)"
-                    alt=""
-                    height="200"
-                  />
+                <div class="question-view">
+                  <div v-if="questionList[currentQuestion].question === 'none'">
+                    <img class="img-fluid"
+                      :src="`/src/assets/test-question/${questionList[currentQuestion].image_path}`" alt=""
+                      height="100">
+                  </div>
+                  <div v-else>
+                    <p class="text-primary fw-bolder h5" v-html="questionList[currentQuestion].question">
+                    </p>
+                    <img v-if="questionList[currentQuestion].image_path !== 'none'"
+                      :src="`/src/assets/test-question/${questionList[currentQuestion].image_path}`" alt=""
+                      height="200">
+                  </div>
                 </div>
                 <!-- <p class="text-primary fw-bolder h5">
                   {{ questionList[currentQuestion].question }}
                 </p> -->
                 <div class="question-choices row">
-                  <div
-                    class="col-lg-6 col-md-12"
-                    v-for="(item, index) in questionList[currentQuestion].choices_v3"
-                    :key="index"
-                  >
+                  <div class="col-lg-6 col-md-12" v-for="(item, index) in questionList[currentQuestion].choices_v3"
+                    :key="index">
                     <button :class="btnStyle(item.id)" @click="choiceAnswer(item.id)">
                       {{ item.choice_name }}
                     </button>
@@ -68,11 +57,7 @@
                 </div>
               </div>
               <div class="form-group mt-5">
-                <button
-                  class="btn btn-outline-info me-3 btn-sm"
-                  @click="previousQuestion()"
-                  v-if="currentQuestion > 0"
-                >
+                <button class="btn btn-outline-info me-3 btn-sm" @click="previousQuestion()" v-if="currentQuestion > 0">
                   PREVIOUS
                 </button>
                 <button class="btn btn-info text-white btn-sm" @click="nextQuestion()">

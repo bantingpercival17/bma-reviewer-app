@@ -1,7 +1,7 @@
 <template>
-  <div class="row m-0 align-items-center vh-50">
-    <div class="col-lg-12 col-md-12">
-      <div class="card-body">
+  <div class="row mt-5 align-items-center vh-50">
+    <div class="col-lg-12 col-md-12 mt-5">
+      <div class="card-body mt-5">
         <div class="text-center">
           <img src="@/assets/image/bma-logo-1.png" class="center img-fluid avatar avatar-100 rounded-circle"
             alt="logo" />

@@ -1,6 +1,7 @@
 import {
     alertController
 } from '@ionic/vue';
+import SQLiteService from './SQLiteService';
 class User {
     constructor() {
         this.table = "users";
@@ -30,13 +31,14 @@ class User {
     }
     insertUser(sync_user_id, name, user_email, password, token) {
         const data = [user_email, password, name, token, sync_user_id]
+        const sQLiteService = new SQLiteService()
         //this.customAlert('User Model', data);
         //this.customAlert('Insert Query', this.insertData);
         try {
-            this.$root.database.run(this.insertData, data)
-            // this.customAlert('User Model', 'Save Saved');
+            sQLiteService.execute(this.insertData, data)
+            this.customAlert('User Model', 'Save Saved');
         } catch (error) {
-            //this.customAlert('User Model', 'Error message: ' + error);
+            this.customAlert('User Model', 'Error message: ' + error);
         }
 
     }

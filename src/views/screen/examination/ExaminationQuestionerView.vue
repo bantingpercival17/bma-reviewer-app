@@ -27,14 +27,17 @@
                     <span class="badge bg-primary">QUESTION {{ currentQuestion + 1 }}</span>
                   </div>
                 </div>
-                <div v-if="!questionList[currentQuestion].question">
-                  <img class="img-fluid" :src="questionView(questionList[currentQuestion].image_path)" alt=""
-                    height="100" />
-                </div>
-                <div v-else>
-                  <p class="text-primary fw-bolder h5" v-html="questionList[currentQuestion].question"></p>
-                  <img v-if="!questionList[currentQuestion].image_path"
-                    :src="questionView(questionList[currentQuestion].image_path)" alt="" height="200" />
+                <div class="question-view">
+                  <div v-if="questionList[currentQuestion].question === 'none'">
+                    <img class="img-fluid" :src="`/src/assets/test-question/${questionList[currentQuestion].image_path}`" alt=""
+                      height="100">
+                  </div>
+                  <div v-else>
+                    <p class="text-primary fw-bolder h5" v-html="questionList[currentQuestion].question">
+                    </p>
+                    <img v-if="questionList[currentQuestion].image_path !== 'none'"
+                      :src="`/src/assets/test-question/${questionList[currentQuestion].image_path}`" alt="" height="200">
+                  </div>
                 </div>
                 <div class="question-choices row">
                   <div class="col-lg-6 col-md-12" v-for="(item, index) in questionList[currentQuestion].choices_v3"

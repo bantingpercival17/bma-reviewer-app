@@ -6,8 +6,11 @@ import {
 import store from '../store/index'
 import {
   IS_USER_AUTHENTICATE_GETTER,
-  GET_USER_TYPE
+  GET_USER_TYPE,
+  AUTO_LOGIN_ACTION
 } from '@/store/storeConstants'
+
+store.dispatch(`auth/${AUTO_LOGIN_ACTION}`);
 const authRoute = (prop) => [{
   path: '/',
   name: prop + '.login',
@@ -34,7 +37,7 @@ const appRoute = (prop) => [
     name: prop + '.dashboard',
     meta: {
       auth: false,
-      name: 'dashboard',
+      name: 'Reviewer',
       user: 'student'
     },
     component: () => import('@/views/screen/ReviewerView.vue')
@@ -45,7 +48,7 @@ const appRoute = (prop) => [
     name: prop + '.examination',
     meta: {
       auth: false,
-      name: 'examination',
+      name: 'Examination',
       user: 'student'
     },
     component: () => import('@/views/screen/examination/ExaminationView.vue')
@@ -58,7 +61,7 @@ const screenRoute = (prop) => [{
     name: prop + '.category',
     meta: {
       auth: false,
-      name: 'category',
+      name: 'Category',
       user: 'student'
     },
     component: () => import('@/views/screen/QuestionerView.vue')
@@ -68,7 +71,7 @@ const screenRoute = (prop) => [{
     name: prop + '.examination-category',
     meta: {
       auth: false,
-      name: 'examination-category',
+      name: 'Examination Category',
       user: 'student'
     },
     component: () => import('@/views/screen/examination/ExaminationQuestionerView.vue')
@@ -93,58 +96,14 @@ const routes = [{
     children: screenRoute('screen-layout')
   },
 ]
-/* const routes = [{
-    path: '/',
-    name: 'Reviewer',
-    component: () => import('@/views/screen/ReviewerView.vue')
-  },
-  {
-    path: '/question/view/:category',
-    name: 'Questioner',
-    component: () => import('@/views/screen/QuestionerView.vue')
-  },
-  {
-    path: '/home',
-    name: 'Home',
-    component: HomePage
-  },
-  {
-    path: '/read',
-    name: 'Read',
-    component: ReadView
-  },
-  {
-    path: '/read/view/:book',
-    name: 'Read-Viewer',
-    component: () => import("@/views/components/book-components/EBookViewer.vue"),
-  },
-  {
-    path: '/write',
-    name: 'Write',
-    component: WriteView
-  },
-  {
-    path: '/write/create',
-    name: 'Write-Create',
-    component: TextWriter,
-  },
-  {
-    path: '/listen',
-    name: 'Listen',
-    component: () => import("@/views/screen/ListenView.vue"),
-  },
 
-] */
-
-function studentUserMiddleware(to, from, next) {
-  // Regular user middleware logic
-  // console.log('Student user middleware')
-  next('/')
-  /*  if (to.meta.user !== 'student') {
-     next('/')
+function UserMiddleware(to, from, next) {
+  // Regular user middleware logicd
+   if (to.meta.user !== 'student') {
+     next('/reviewer')
    } else {
      next()
-   } */
+   }
 }
 
 function applicantUserMiddleware(to, from, next) {
@@ -165,15 +124,14 @@ const router = createRouter({
   history: createWebHashHistory(),
   routes
 })
-/* router.beforeEach((to, from, next) => {
+router.beforeEach((to, from, next) => {
 
   const isAuth = store.getters[`auth/${IS_USER_AUTHENTICATE_GETTER}`]
   const isAuthType = store.getters[`auth/${GET_USER_TYPE}`]
   document.title = `${to.meta.name} - Baliwag Maritime Academy, Inc.`
-  console.log(store.state.auth)
+console.log(isAuthType)
   if (isAuth) {
-    //studentUserMiddleware(to, from, next)
-    next()
+    UserMiddleware(to, from, next)
   } else {
     if (to.meta.user !== 'guest') {
       next('/')
@@ -181,5 +139,5 @@ const router = createRouter({
       next()
     }
   }
-}) */
+})
 export default router

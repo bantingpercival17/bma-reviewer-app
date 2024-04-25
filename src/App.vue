@@ -8,15 +8,18 @@
 import { IonApp, IonRouterOutlet, alertController } from "@ionic/vue";
 import SQLiteService from "./database/sqlite.service.js";
 import { AUTO_LOGIN_ACTION } from "@/store/storeConstants";
+import DatabaseSetup from './database/index'
 export default {
   components: {
     IonApp,
     IonRouterOutlet,
   },
-  mixins: [SQLiteService],
+  /*   mixins: [SQLiteService], */
   async created() {
     this.$store.dispatch(`auth/${AUTO_LOGIN_ACTION}`);
-    await this.initDB(); // Ensure that the database is initialized before proceeding
+    const databaseConnection = new DatabaseSetup()
+    await databaseConnection.initDatabase()
+    //await this.initDB(); // Ensure that the database is initialized before proceeding
   },
   methods: {
     async customAlert(header, message) {

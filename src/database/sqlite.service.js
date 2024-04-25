@@ -63,6 +63,18 @@ export default {
                 return false;
             }
         },
+        async executeQueryV2(sql, params = []) {
+            try {
+                if (!this.database) {
+                    throw new Error('Database not initialized');
+                }
+                return await this.database.run(sql, params);
+                //return await this.database.executeSql(sql, params);
+            } catch (e) {
+                console.error('Error executing query: ', e);
+                return false;
+            }
+        },
         async createUserTable() {
             const createTable = this.userModel.createTableQuery
             const createTableTwo = this.examinationScoreModel

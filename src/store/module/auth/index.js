@@ -113,9 +113,9 @@ export default {
                         }
                         context.commit(SET_USER_TOKEN_MUTATION, tokenData)
                         localStorage.setItem('userData', JSON.stringify(tokenData))
-                        /*  const userModel = new User();
+                         const userModel = new User();
                          userModel.insertUser(response.data.student.account.student_id,
-                             response.data.student.account.email, userName, response.data.token) */
+                             response.data.student.account.email, userName, response.data.token)
                         console.log('Save Detials')
                     } else {
                         throw 'No data'
